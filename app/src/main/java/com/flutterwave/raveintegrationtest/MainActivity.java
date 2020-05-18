@@ -1,12 +1,8 @@
 package com.flutterwave.raveintegrationtest;
 
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -14,6 +10,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.flutterwave.raveandroid.Meta;
 import com.flutterwave.raveandroid.RaveConstants;
@@ -99,12 +98,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        addSubAccountsSwitch.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener(){
+        addSubAccountsSwitch.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                if(checked){
+                if (checked) {
                     addSubaccountsLayout.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     clear();
                 }
             }
@@ -122,9 +121,34 @@ public class MainActivity extends AppCompatActivity {
                 clear();
             }
         });
+        setupTestDetails();
     }
 
-    private void clear(){
+    private void setupTestDetails() {
+        emailEt.setText("varisiv@gmail.com");
+        amountEt.setText("1");
+        txRefEt.setText("1");
+        currencyEt.setText("NGN");
+        countryEt.setText("NG");
+        fNameEt.setText("Wuraola");
+        lNameEt.setText("Benson");
+        publicKeyEt.setText("FLWPUBK_TEST-7ddb1c9cb4571aa27d588f468fb8c052-X");
+        encryptionKeyEt.setText("FLWSECK_TEST24a907495c60");
+        isLiveSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    publicKeyEt.setText("FLWPUBK-aec2b6c6cfe500854a21a0808f1ca280-X");
+                    encryptionKeyEt.setText("7b52e2b832ecbb4451fe7b3b");
+                } else {
+                    publicKeyEt.setText("FLWPUBK_TEST-7ddb1c9cb4571aa27d588f468fb8c052-X");
+                    encryptionKeyEt.setText("FLWSECK_TEST24a907495c60");
+                }
+            }
+        });
+    }
+
+    private void clear() {
         subAccounts.clear();
         vendorListTXT.setText("Your current vendor refs are: ");
         addSubaccountsLayout.setVisibility(View.GONE);
@@ -156,27 +180,27 @@ public class MainActivity extends AppCompatActivity {
             emailEt.setError("A valid email is required");
         }
 
-        if (publicKey.length() < 1){
+        if (publicKey.length() < 1) {
             valid = false;
             publicKeyEt.setError("A valid public key is required");
         }
 
-        if (encryptionKey.length() < 1){
+        if (encryptionKey.length() < 1) {
             valid = false;
             encryptionKeyEt.setError("A valid encryption key is required");
         }
 
-        if (txRef.length() < 1){
+        if (txRef.length() < 1) {
             valid = false;
             txRefEt.setError("A valid txRef key is required");
         }
 
-        if (currency.length() < 1){
+        if (currency.length() < 1) {
             valid = false;
             currencyEt.setError("A valid currency code is required");
         }
 
-        if (country.length() < 1){
+        if (country.length() < 1) {
             valid = false;
             countryEt.setError("A valid country code is required");
         }
@@ -221,15 +245,12 @@ public class MainActivity extends AppCompatActivity {
 
             if (resultCode == RavePayActivity.RESULT_SUCCESS) {
                 Toast.makeText(this, "SUCCESS " + message, Toast.LENGTH_SHORT).show();
-            }
-            else if (resultCode == RavePayActivity.RESULT_ERROR) {
+            } else if (resultCode == RavePayActivity.RESULT_ERROR) {
                 Toast.makeText(this, "ERROR " + message, Toast.LENGTH_SHORT).show();
-            }
-            else if (resultCode == RavePayActivity.RESULT_CANCELLED) {
+            } else if (resultCode == RavePayActivity.RESULT_CANCELLED) {
                 Toast.makeText(this, "CANCELLED " + message, Toast.LENGTH_SHORT).show();
             }
-        }
-        else {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -247,51 +268,51 @@ public class MainActivity extends AppCompatActivity {
         lNameEt.setError(null);
     }
 
-    private void addVendorDialog(){
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        // ...Irrelevant code for customizing the buttons and title
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.add_vendor_layout, null);
-        dialogBuilder.setView(dialogView);
-        final EditText vendorReferenceET = dialogView.findViewById(R.id.vendorReferecnceET);
-        final EditText vendorRatioET = dialogView.findViewById(R.id.vendorRatioET);
-        Button addVendorBtn = dialogView.findViewById(R.id.doneDialogBtn);
-        Button cancelDialogBtn = dialogView.findViewById(R.id.cancelDialogBtn);
-        final AlertDialog alertDialog = dialogBuilder.create();
-        cancelDialogBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-            }
-        });
-        addVendorBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Boolean valid = true;
-                String vendorRef = vendorReferenceET.getText().toString().trim();
-                String vendorRatio = vendorRatioET.getText().toString().trim();
-
-                if(vendorRef.length()<1){
-                    vendorReferenceET.setError("Vendor reference is required");
-                    valid =  false;
-                }
-                if(vendorRatioET.length()<1){
-                    vendorRatioET.setError("Vendor ratio is required");
-                    valid =  false;
-                }
-                if(!valid){
-                    return;
-                }
-                if(subAccounts.size()!=0){
-                    vendorListTXT.setText(vendorListTXT.getText().toString()+", "+ vendorRef +"("+ vendorRatio+")");
-                }else{
-                    vendorListTXT.setText(vendorListTXT.getText().toString()+ vendorRef +"("+vendorRatio+")");
-                }
-                subAccounts.add(new SubAccount(vendorRef,vendorRatio));
-                alertDialog.dismiss();
-            }
-        });
-        alertDialog.show();
+    private void addVendorDialog() {
+//        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+//        // ...Irrelevant code for customizing the buttons and title
+//        LayoutInflater inflater = this.getLayoutInflater();
+//        View dialogView = inflater.inflate(R.layout.add_vendor_layout, null);
+//        dialogBuilder.setView(dialogView);
+//        final EditText vendorReferenceET = dialogView.findViewById(R.id.vendorReferecnceET);
+//        final EditText vendorRatioET = dialogView.findViewById(R.id.vendorRatioET);
+//        Button addVendorBtn = dialogView.findViewById(R.id.doneDialogBtn);
+//        Button cancelDialogBtn = dialogView.findViewById(R.id.cancelDialogBtn);
+//        final AlertDialog alertDialog = dialogBuilder.create();
+//        cancelDialogBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                alertDialog.dismiss();
+//            }
+//        });
+//        addVendorBtn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//                Boolean valid = true;
+//                String vendorRef = vendorReferenceET.getText().toString().trim();
+//                String vendorRatio = vendorRatioET.getText().toString().trim();
+//
+//                if(vendorRef.length()<1){
+//                    vendorReferenceET.setError("Vendor reference is required");
+//                    valid =  false;
+//                }
+//                if(vendorRatioET.length()<1){
+//                    vendorRatioET.setError("Vendor ratio is required");
+//                    valid =  false;
+//                }
+//                if(!valid){
+//                    return;
+//                }
+//                if(subAccounts.size()!=0){
+//                    vendorListTXT.setText(vendorListTXT.getText().toString()+", "+ vendorRef +"("+ vendorRatio+")");
+//                }else{
+//                    vendorListTXT.setText(vendorListTXT.getText().toString()+ vendorRef +"("+vendorRatio+")");
+//                }
+//                subAccounts.add(new SubAccount(vendorRef,vendorRatio));
+//                alertDialog.dismiss();
+//            }
+//        });
+//        alertDialog.show();
     }
 
 }
